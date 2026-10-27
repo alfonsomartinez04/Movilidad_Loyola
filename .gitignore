@@ -1,0 +1,10 @@
+# Datos locales del contenedor de PostgreSQL
+data_postgres/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db

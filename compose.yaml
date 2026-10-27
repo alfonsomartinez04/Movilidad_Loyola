@@ -1,0 +1,40 @@
+name: movilidad-spark-loyola
+
+services:
+  postgres-empresa:
+    image: postgis/postgis:16-3.4
+    container_name: loyola-postgres-empresa
+    environment:
+      POSTGRES_USER: loyola_admin
+      POSTGRES_PASSWORD: loyola_password
+      POSTGRES_DB: universidad_empresa_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./init_empresa.sql:/docker-entrypoint-initdb.d/init_empresa.sql
+      - ./data_postgres:/var/lib/postgresql/data
+    networks:
+      - loyola-net
+    restart: unless-stopped
+
+  spark-master:
+    image: apache/spark:3.5.1-python3
+    container_name: loyola-spark-master
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    volumes:
+      - ./app:/opt/spark/work-dir
+    networks:
+      - loyola-net
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+
+networks:
+  loyola-net:
+    driver: bridge
